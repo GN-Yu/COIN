@@ -1,16 +1,13 @@
-for run = 1:obj_DM.runs
-    motor_output(run,:) = OUTPUT.runs{run}.motor_output;
-    state_feedback_output(run,:) = OUTPUT.runs{run}.state_feedback;
-end
-% figure
-% plot(OUTPUT.weights*motor_output)
-% hold on
-% plot(OUTPUT.weights*state_feedback_output)
-% legend('motor output','state feedback')
+figure;
 
-figure
-plot(obj_DM.perturbations - OUTPUT.weights*motor_output)
-grid on;
-xlim([0,800]);
-ylim([-1.2,1.2]);
-legend("perturbations - motor output")
+% Loop over the figures
+for i = 1:10
+    % Create a subplot for each figure
+    subplot(5, 2, i);
+    
+    % Load and display the i-th figure
+    img = imread(fullfile('.', 'figureoutput_COIN', ['figure' num2str(i) '.png']));
+    imshow(img);
+    
+    title(['Figure ', num2str(i)]);
+end
