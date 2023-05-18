@@ -14,7 +14,7 @@ obj_DM = COIN;
 
 obj_DM.perturbations = [zeros(1,24) ones(1,60) zeros(1,24) -ones(1,60) zeros(1,24) randomNumbers zeros(1,24) -ones(1,60) zeros(1,24) ones(1,60) zeros(1,24) randomNumbers];
 
-obj_DM.runs = 10;
+obj_DM.runs = 5;
 obj_DM.max_cores = feature('numcores');
 
 obj_DM.infer_bias = true;

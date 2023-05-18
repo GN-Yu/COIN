@@ -1,13 +1,14 @@
-figure;
+figure
+plot(obj_DM.perturbations - OUTPUT.weights*motor_output)
+grid on;
+xlim([0,800]);
+ylim([-1.2,1.2]);
+legend("perturbations - motor output")
 
-% Loop over the figures
-for i = 1:10
-    % Create a subplot for each figure
-    subplot(5, 2, i);
-    
-    % Load and display the i-th figure
-    img = imread(fullfile('.', 'figureoutput_COIN', ['figure' num2str(i) '.png']));
-    imshow(img);
-    
-    title(['Figure ', num2str(i)]);
-end
+
+% % Save all figures
+% for i = 1:10
+%     figure(i);
+%     % Append the folder 'figures' before the filename
+%     print(fullfile('.', 'figureoutput_COIN', ['figure' num2str(i) '.png']), '-dpng');
+% end
