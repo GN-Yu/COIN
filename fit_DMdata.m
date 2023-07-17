@@ -6,7 +6,7 @@ adaptation = readmatrix(fullfile(data_path, 'adaptation.csv'));
 [P, trials] = size(perturbations);
 
 % number of runs that are used to estimate the negative log-likelihood
-runs = 4;
+runs = 2;
 warning('consider increasing the number of runs that are used to estimate the negative log-likelihood')
             
 % number of CPUs available (0 performs serial processing)
@@ -38,6 +38,54 @@ tic;
 [maximum_likelihood_parameters,fval,exitflag,output] = bads(objective,x0,lb,ub,plb,pub,[],options);
 warning('consider repeating parameter optimisation from multiple initial points')
 elapsedTime = toc;
+
+
+% number of runs used to simulate the model with the fitted parameters
+% this does not need to be the same as the number of runs used to estimate the negative log-likelihood
+runs = 4;
+warning('consider increasing the number of runs of the COIN model simulation')
+
+% create an array of objects
+object_simulate = create_object_array(perturbations,adaptation,runs,max_cores);
+
+% simulate the model for each participant using the fitted parameters
+% data = zeros(P,trials);
+fit = zeros(P,trials);
+for participant = 1:P
+    
+    % set the parameters to their fitted (maximum-likelihood) values
+    set_parameters(object_simulate(participant),maximum_likelihood_parameters);
+    
+    if P == 1
+        object_simulate(participant).adaptation = adaptation(participant,:);
+    elseif P > 1
+        object_simulate(participant).adaptation = [];
+    end
+    
+    % plot internal representations
+    if P == 1
+        object_simulate(participant).plot_predicted_probabilities = true;
+        object_simulate(participant).plot_state_given_context = true;
+        object_simulate(participant).plot_state = true;
+        object_simulate(participant).plot_local_transition_probabilities = true;
+        object_simulate(participant).plot_global_transition_probabilities = true;
+%         object_simulate(participant).plot_local_cue_probabilities = true;
+%         object_simulate(participant).plot_global_cue_probabilities = true;
+    end
+
+    % run the COIN model simulation
+    OUTPUT = object_simulate(participant).simulate_COIN;
+    
+    % extract the motor output of each run of the simulation
+    motor_output = zeros(trials,runs);
+    for run = 1:runs
+        motor_output(:,run) = OUTPUT.runs{run}.motor_output;
+    end
+    
+    fit(participant,:) = OUTPUT.weights*motor_output.';
+    
+end
+
 
 
 function obj = create_object_array(perturbations,adaptation,runs,max_cores)
