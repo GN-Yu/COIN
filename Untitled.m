@@ -5,8 +5,9 @@ trials = 768;
 file = dir(sprintf('data/DMdata/sub01_*.csv'));
 filename = file(1).name;
 data = readtable(filename);
+tasks = [data.perturbation].';
 cues = [data.cue_with_perturb].';
-perturbations = [data.perturbation].' / 0.52;
+perturbations = ([data.target_inds].' - 2) / 2;
 
 % create an object of the COIN class
 obj = COIN;
@@ -40,7 +41,7 @@ for run = 1:obj.runs
     state_feedback_output(run,:) = OUTPUT.runs{run}.state_feedback;
 end
 
-error = obj.perturbations - OUTPUT.weights*motor_output;
+error = tasks - OUTPUT.weights*motor_output;
 
 
 figure
